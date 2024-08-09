@@ -1,7 +1,11 @@
 #pragma once
 
 #include <gfx/seadGraphics.h>
+#include <thread/seadAtomic.h>
 #include <thread/seadCriticalSection.h>
+#include "framework/nx/seadGameFrameworkNx.h"
+#include "gfx/seadDrawLockContext.h"
+#include "nn/gfx/gfx_Types.h"
 #include "nvn/nvn.h"
 
 namespace sead
@@ -11,58 +15,55 @@ class GraphicsNvn : public Graphics
 public:
     class CreateArg;
 
-    GraphicsNvn(const CreateArg& arg);
+    explicit GraphicsNvn(const CreateArg& arg);
+
+    DrawLockContext* getDrawLockContext() const override;
 
     void initializeDrawLockContext(Heap*);
     void initializeImpl(Heap*);
 
     int getNewTextureId();
+    int getNewSamplerId();
     NVNdevice* getNvnDevice() const { return mNvnDevice; }
     NVNtexturePool* getTexturePool() { return &mNvnTexturePool; }
     int getTextureSamplerID() const { return mTextureSamplerID; }
-    CriticalSection* getCriticalSection2() { return &mCriticalSection2; }
+    CriticalSection* getTexturePoolCS() { return &mTexturePoolCS; }
 
 private:
+    using DebugCallback = IDelegate1<GraphicsNvn*>;
+
     NVNdevice* mNvnDevice;
-    void* _38;
-    void* _40;
-    void* _48;
-    void* _50;
+    NVNqueue* mNvnQueue;
+    NVNbuffer* mNvnBufferReport;
+    ::nn::gfx::Device* mDevice;
+    DisplayBufferNvn* mDisplayBufferNvn;
     NVNtexturePool mNvnTexturePool;
-    void* _78;
+    NVNsamplerPool* mNvnSamplerPool;
     void* _80;
     void* _88;
     void* _90;
-    void* _98;
-    void* _A0;
-    void* _A8;
-    void* _B0;
-    void* _B8;
-    void* _C0;
+    NVNsampler mNvnSampler;
     void* _C8;
     void* _D0;
-    void* _D8;
-    void* _E0;
-    void* _E8;
-    void* _F0;
     int mTextureSamplerID;
-    void* _100;
-    int _108;
-    int _10C;
-    int _110;
-    int _114;
+    int _DC;
+    NVNmemoryPool* mNvnMemoryPool;
+    Atomic<int> mTextureSamplerIdIter;
+    Atomic<int> mTextureIdIter;
+    int mTextureCount;
+    int mTextureSamplerCount;
     CriticalSection mCriticalSection1;
-    CriticalSection mCriticalSection2;
-    CriticalSection mCriticalSection3;
+    CriticalSection mTexturePoolCS;
+    CriticalSection mSamplerPoolCS;
     void* _1D8;
     void* _1E0;
     void* _1E8;
     void* _1F0;
-    void* _1F8;
+    DebugCallback* mNvnDebugCallback;
     bool _200;
     bool _201;
     bool _202;
 };
-static_assert(sizeof(GraphicsNvn) == 0x208);
+static_assert(sizeof(GraphicsNvn) == 0x188);
 
 }  // namespace sead

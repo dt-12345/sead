@@ -6,7 +6,6 @@ namespace sead
 {
 class DebugFontMgrJis1Nvn : public FontBase
 {
-    SEAD_SINGLETON_DISPOSER(DebugFontMgrJis1Nvn)
 public:
     DebugFontMgrJis1Nvn();
     ~DebugFontMgrJis1Nvn() override;
@@ -40,12 +39,12 @@ private:
     void* mBuffer2Map = nullptr;
     UniformBlockBuffer mUniformBlockBuffer;
     bool _530 = false;
+    SEAD_SINGLETON_DISPOSER(DebugFontMgrJis1Nvn)
 };
-static_assert(sizeof(DebugFontMgrJis1Nvn) == 0x538);
+static_assert(sizeof(DebugFontMgrJis1Nvn) == 0x4f8);
 
 class DebugFontMgrNvn : public FontBase
 {
-    SEAD_SINGLETON_DISPOSER(DebugFontMgrNvn)
 public:
     DebugFontMgrNvn();
     ~DebugFontMgrNvn() override;
@@ -78,6 +77,8 @@ private:
     void* buffer2Map = nullptr;
     UniformBlockBuffer mUniformBlockBuffer;
     bool _528 = 0;
+
+    SEAD_SINGLETON_DISPOSER(DebugFontMgrNvn)
 };
-static_assert(sizeof(DebugFontMgrNvn) == 0x530);
+static_assert(sizeof(DebugFontMgrNvn) == 0x4f0);
 }  // namespace sead

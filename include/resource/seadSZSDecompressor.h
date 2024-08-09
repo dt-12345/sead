@@ -6,29 +6,23 @@
 #include <resource/seadResource.h>
 #include <resource/seadResourceMgr.h>
 
-namespace sead
-{
-class SZSDecompressor : public Decompressor
-{
+namespace sead {
+class SZSDecompressor : public Decompressor {
 public:
-    enum Step
-    {
+    enum Step {
         cStepNormal = 0,
         cStepShort = 1,
         cStepLong = 2,
     };
 
-    struct DecompContext
-    {
+    struct DecompContext {
         DecompContext();
         DecompContext(void* dst);
 
         void initialize(void* dst);
 
-        __attribute__((always_inline)) bool doCopy(u32 n)
-        {
-            if (u32(this->destCount) < n)
-            {
+        __attribute__((always_inline)) bool doCopy(u32 n) {
+            if (u32(this->destCount) < n) {
                 if (this->forceDestCount == 0)
                     return false;
 
@@ -37,8 +31,7 @@ public:
 
             this->destCount -= n;
 
-            do
-            {
+            do {
                 *this->destp = *(this->destp - this->lzOffset);
                 this->destp += 1;
             } while (--n != 0);

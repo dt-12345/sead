@@ -38,7 +38,7 @@ public:
 
 private:
 #ifdef NNSDK
-    nn::os::MessageQueueType mMessageQueueInner;
+    nn::os::LightMessageQueueType mMessageQueueInner;
     Element* mBuffer = nullptr;
 #else
 #error "Unknown platform"

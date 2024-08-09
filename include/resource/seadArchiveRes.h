@@ -9,15 +9,12 @@
 #include <prim/seadSafeString.h>
 #include <resource/seadResource.h>
 
-namespace sead
-{
-class ArchiveRes : public DirectResource
-{
+namespace sead {
+class ArchiveRes : public DirectResource {
     SEAD_RTTI_OVERRIDE(ArchiveRes, DirectResource)
 
 public:
-    struct FileInfo
-    {
+    struct FileInfo {
         u32 mStartOffset;
         u32 mLength;
     };
@@ -29,39 +26,33 @@ public:
     s32 getLoadDataAlignment() const override;
     void doCreate_(u8* buf, u32, Heap*) override;
 
-    const void* getFile(const SafeString& file_path, FileInfo* info = nullptr) const
-    {
+    const void* getFile(const SafeString& file_path, FileInfo* info = nullptr) const {
         SEAD_ASSERT(mEnable);
         return getFileImpl_(file_path, info);
     }
 
-    const void* getFileFast(const s32 entry_id, FileInfo* info) const
-    {
+    const void* getFileFast(const s32 entry_id, FileInfo* info) const {
         SEAD_ASSERT(mEnable);
         return getFileFastImpl_(entry_id, info);
     }
 
-    s32 convertPathToEntryID(const SafeString& path) const
-    {
+    s32 convertPathToEntryID(const SafeString& path) const {
         SEAD_ASSERT(mEnable);
         return convertPathToEntryIDImpl_(path);
     }
 
-    bool setCurrentDirectory(const SafeString& dir)
-    {
+    bool setCurrentDirectory(const SafeString& dir) {
         SEAD_ASSERT(mEnable);
         return setCurrentDirectoryImpl_(dir);
     }
 
-    bool openDirectory(HandleBuffer* handle, const SafeString& dir) const
-    {
+    bool openDirectory(HandleBuffer* handle, const SafeString& dir) const {
         return openDirectoryImpl_(handle, dir);
     }
 
     bool closeDirectory(HandleBuffer* handle) const { return closeDirectoryImpl_(handle); }
 
-    u32 readDirectory(HandleBuffer* handle, DirectoryEntry* entries, u32 num) const
-    {
+    u32 readDirectory(HandleBuffer* handle, DirectoryEntry* entries, u32 num) const {
         return readDirectoryImpl_(handle, entries, num);
     }
 

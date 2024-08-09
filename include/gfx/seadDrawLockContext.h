@@ -3,10 +3,8 @@
 #include "hostio/seadHostIONode.h"
 #include "thread/seadCriticalSection.h"
 
-namespace sead
-{
-class DrawLockContext : public hostio::Node
-{
+namespace sead {
+class DrawLockContext : public hostio::Node {
 public:
     DrawLockContext();
 

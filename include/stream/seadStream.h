@@ -4,16 +4,13 @@
 #include "prim/seadEndian.h"
 #include "prim/seadSafeString.h"
 
-namespace sead
-{
+namespace sead {
 class StreamFormat;
 class StreamSrc;
 
-class Stream
-{
+class Stream {
 public:
-    enum class Modes
-    {
+    enum class Modes {
         Binary = 0,
         Text = 1,
     };
@@ -38,8 +35,7 @@ protected:
     Endian::Types mEndian;
 };
 
-class ReadStream : public Stream
-{
+class ReadStream : public Stream {
 public:
     u8 readU8();
     void readU8(u8&);
@@ -68,8 +64,7 @@ private:
     f64 readF64BitImpl_(u32, u32);
 };
 
-class WriteStream : public ReadStream
-{
+class WriteStream : public ReadStream {
 public:
     ~WriteStream() override = default;
 

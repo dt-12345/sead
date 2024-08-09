@@ -7,12 +7,10 @@
 #include "heap/seadDisposer.h"
 #include "time/seadTickSpan.h"
 
-namespace sead
-{
+namespace sead {
 class Heap;
 
-class Event : public IDisposer
-{
+class Event : public IDisposer {
 public:
     Event();
     explicit Event(bool manual_reset);
@@ -32,8 +30,7 @@ public:
     void resetSignal();
 
 private:
-    void setInitialized([[maybe_unused]] bool initialized)
-    {
+    void setInitialized([[maybe_unused]] bool initialized) {
 #ifdef SEAD_DEBUG
         mInitialized = initialized;
 #endif

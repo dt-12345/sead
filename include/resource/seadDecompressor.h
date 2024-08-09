@@ -1,5 +1,4 @@
-#ifndef SEAD_DECOMPRESSOR_H_
-#define SEAD_DECOMPRESSOR_H_
+#pragma once  // IDE wasn't recognizing the header guard so we'll just do this to keep it happy :)
 
 #include <basis/seadTypes.h>
 #include <container/seadTList.h>
@@ -8,17 +7,13 @@
 #include <resource/seadResource.h>
 #include <resource/seadResourceMgr.h>
 
-namespace sead
-{
-class Decompressor : public TListNode<Decompressor*>, public IDisposer
-{
+namespace sead {
+class Decompressor : public TListNode<Decompressor*>, public IDisposer {
 public:
-    Decompressor(const SafeString& name) : TListNode<Decompressor*>(this), IDisposer(), mExt(name)
-    {
-    }
+    Decompressor(const SafeString& name)
+        : TListNode<Decompressor*>(this), IDisposer(), mExt(name) {}
 
-    virtual ~Decompressor()
-    {
+    virtual ~Decompressor() {
         if (ResourceMgr::instance() != NULL)
             ResourceMgr::instance()->unregisterDecompressor(this);
     }
@@ -34,5 +29,3 @@ protected:
 };
 
 }  // namespace sead
-
-#endif  // SEAD_DECOMPRESSOR_H_

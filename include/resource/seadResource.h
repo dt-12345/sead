@@ -10,10 +10,8 @@
 #include <resource/seadDecompressor.h>
 #include <resource/seadResourceMgr.h>
 
-namespace sead
-{
-class Resource
-{
+namespace sead {
+class Resource {
 public:
     SEAD_RTTI_BASE(Resource)
 
@@ -21,8 +19,7 @@ public:
     virtual ~Resource();
 };
 
-class DirectResource : public Resource
-{
+class DirectResource : public Resource {
     SEAD_RTTI_OVERRIDE(DirectResource, Resource)
 
 public:
@@ -47,8 +44,7 @@ protected:
     BitFlag32 mSettingFlag;
 };
 
-class ResourceFactory : public TListNode<ResourceFactory*>, public IDisposer
-{
+class ResourceFactory : public TListNode<ResourceFactory*>, public IDisposer {
     SEAD_RTTI_BASE(ResourceFactory)
 public:
     ResourceFactory() : TListNode<ResourceFactory*>(this), IDisposer(), mExt() {}
@@ -67,8 +63,7 @@ protected:
     FixedSafeString<32> mExt;
 };
 
-class DirectResourceFactoryBase : public ResourceFactory
-{
+class DirectResourceFactoryBase : public ResourceFactory {
     SEAD_RTTI_OVERRIDE(DirectResourceFactoryBase, ResourceFactory)
 public:
     DirectResourceFactoryBase() : ResourceFactory() {}
@@ -83,16 +78,14 @@ public:
 };
 
 template <typename T>
-class DirectResourceFactory : public DirectResourceFactoryBase
-{
+class DirectResourceFactory : public DirectResourceFactoryBase {
     SEAD_RTTI_OVERRIDE(DirectResourceFactory<T>, DirectResourceFactoryBase)
 public:
     DirectResourceFactory() : DirectResourceFactoryBase() {}
 
     ~DirectResourceFactory() override {}
 
-    DirectResource* newResource_(Heap* heap, s32 alignment) override
-    {
+    DirectResource* newResource_(Heap* heap, s32 alignment) override {
         return new (heap, alignment) T;
     }
 };

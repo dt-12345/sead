@@ -173,7 +173,6 @@ public:
 
 class PrimitiveRenderer
 {
-    SEAD_SINGLETON_DISPOSER(PrimitiveRenderer)
 public:
     PrimitiveRenderer();
     virtual ~PrimitiveRenderer() {}
@@ -232,6 +231,7 @@ private:
     Matrix34f mCameraMatrix;
     Matrix44f mProjection;
     Matrix34f mModelMatrix;
+    SEAD_SINGLETON_DISPOSER(PrimitiveRenderer)
 };
 
 }  // namespace sead

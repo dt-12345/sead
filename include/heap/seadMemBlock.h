@@ -4,10 +4,8 @@
 #include "container/seadListImpl.h"
 #include "container/seadOffsetList.h"
 
-namespace sead
-{
-class MemBlock
-{
+namespace sead {
+class MemBlock {
 public:
     static MemBlock* FindManageArea(void* ptr);
 

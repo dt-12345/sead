@@ -80,9 +80,9 @@ public:
     }
     SafeStringBase(const SafeStringBase& other) = default;
 
-    virtual ~SafeStringBase() = default;
+    ~SafeStringBase() = default;
 
-    virtual SafeStringBase& operator=(const SafeStringBase& other);
+    SafeStringBase& operator=(const SafeStringBase& other);
 
     bool operator==(const SafeStringBase& rhs) const { return isEqual(rhs); }
     bool operator!=(const SafeStringBase& rhs) const { return !(*this == rhs); }
@@ -139,7 +139,7 @@ public:
     static const s32 cMaximumLength = 0x80000;
 
 protected:
-    virtual void assureTerminationImpl_() const {}
+    void assureTerminationImpl_() const {}
     const T& unsafeAt_(s32 idx) const { return mStringTop[idx]; }
 
     const T* mStringTop;
@@ -174,9 +174,9 @@ public:
     }
 
     BufferedSafeStringBase(const BufferedSafeStringBase&) = default;
-    ~BufferedSafeStringBase() override = default;
+    ~BufferedSafeStringBase() = default;
 
-    BufferedSafeStringBase<T>& operator=(const SafeStringBase<T>& other) override;
+    BufferedSafeStringBase<T>& operator=(const SafeStringBase<T>& other);
 
     const T& operator[](s32 idx) const;
 
@@ -293,7 +293,7 @@ public:
     inline void clear() { getMutableStringTop_()[0] = this->cNullChar; }
 
 protected:
-    void assureTerminationImpl_() const override;
+    void assureTerminationImpl_() const;
 
     T* getMutableStringTop_() { return const_cast<T*>(this->mStringTop); }
 
@@ -321,7 +321,7 @@ public:
         this->copy(str);
     }
 
-    ~FixedSafeStringBase() override = default;
+    ~FixedSafeStringBase() = default;
 
     FixedSafeStringBase& operator=(const FixedSafeStringBase& other)
     {
@@ -329,7 +329,7 @@ public:
         return *this;
     }
 
-    FixedSafeStringBase& operator=(const SafeStringBase<T>& other) override
+    FixedSafeStringBase& operator=(const SafeStringBase<T>& other)
     {
         this->copy(other);
         return *this;
@@ -377,7 +377,7 @@ public:
         return *this;
     }
 
-    FixedSafeString<L>& operator=(const SafeStringBase<char>& other) override
+    FixedSafeString<L>& operator=(const SafeStringBase<char>& other)
     {
         this->copy(other);
         return *this;
@@ -410,7 +410,7 @@ public:
         this->formatV(format, args);
         va_end(args);
     }
-    ~FormatFixedSafeString() override = default;
+    ~FormatFixedSafeString() = default;
 };
 
 template <s32 L>
@@ -424,7 +424,7 @@ public:
         this->formatV(format, args);
         va_end(args);
     }
-    ~WFormatFixedSafeString() override = default;
+    ~WFormatFixedSafeString() = default;
 };
 
 template <typename T>
@@ -453,13 +453,13 @@ public:
         return *this;
     }
 
-    ~HeapSafeStringBase() override
+    ~HeapSafeStringBase()
     {
         if (this->mStringTop)
             delete[] this->mStringTop;
     }
 
-    HeapSafeStringBase<T>& operator=(const SafeStringBase<T>& other) override;
+    HeapSafeStringBase<T>& operator=(const SafeStringBase<T>& other);
 };
 
 using HeapSafeString = HeapSafeStringBase<char>;

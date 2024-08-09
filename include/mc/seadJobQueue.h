@@ -149,6 +149,5 @@ protected:
     Buffer<Job*> mJobs;
     u32 mNumJobs;
     u32 mNumProcessedJobs;
-    bool _230;
 };
 }  // namespace sead

@@ -65,9 +65,8 @@ public:
     TaskBase::CreateArg mRootTaskCreateArg;
     TaskMgr::InitializeArg mInitializeArg;
     MethodTreeNode mCalcDestructionTreeNode;
-    u32 useless1;
-    u32 useless2;
 };
+static_assert(sizeof(TaskMgr) == 0x278);
 
 }  // namespace sead
 

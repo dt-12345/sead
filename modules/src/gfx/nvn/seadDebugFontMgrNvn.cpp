@@ -121,7 +121,7 @@ void DebugFontMgrJis1Nvn::initializeFromBinary(Heap* heap, void* shader_binary, 
     nvnTextureInitialize(&mNvnTexture, &texBuilder);
 
     CriticalSection* criticalSection2 =
-        static_cast<GraphicsNvn*>(sead::Graphics::instance())->getCriticalSection2();
+        static_cast<GraphicsNvn*>(sead::Graphics::instance())->getTexturePoolCS();
     criticalSection2->lock();
     int newTextureId = static_cast<GraphicsNvn*>(sead::Graphics::instance())->getNewTextureId();
     nvnTexturePoolRegisterTexture(

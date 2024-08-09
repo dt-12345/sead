@@ -17,12 +17,12 @@ void MessageQueue::allocate(s32 size, Heap* heap)
     }
 
     mBuffer = new (heap) Element[size];
-    nn::os::InitializeMessageQueue(&mMessageQueueInner, reinterpret_cast<u64*>(mBuffer), size);
+    nn::os::InitializeLightMessageQueue(&mMessageQueueInner, reinterpret_cast<u64*>(mBuffer), size);
 }
 
 void MessageQueue::free()
 {
-    nn::os::FinalizeMessageQueue(&mMessageQueueInner);
+    nn::os::FinalizeLightMessageQueue(&mMessageQueueInner);
     if (mBuffer)
     {
         delete[] mBuffer;
@@ -34,11 +34,11 @@ bool MessageQueue::push(MessageQueue::Element message, MessageQueue::BlockType b
 {
     if (block_type == BlockType::Blocking)
     {
-        nn::os::SendMessageQueue(&mMessageQueueInner, message);
+        nn::os::SendLightMessageQueue(&mMessageQueueInner, message);
         return true;
     }
 
-    return nn::os::TrySendMessageQueue(&mMessageQueueInner, message);
+    return nn::os::TrySendLightMessageQueue(&mMessageQueueInner, message);
 }
 
 MessageQueue::Element MessageQueue::pop(MessageQueue::BlockType block_type)
@@ -47,11 +47,11 @@ MessageQueue::Element MessageQueue::pop(MessageQueue::BlockType block_type)
 
     if (block_type == BlockType::Blocking)
     {
-        nn::os::ReceiveMessageQueue(&message, &mMessageQueueInner);
+        nn::os::ReceiveLightMessageQueue(&message, &mMessageQueueInner);
         return message;
     }
 
-    if (nn::os::TryReceiveMessageQueue(&message, &mMessageQueueInner))
+    if (nn::os::TryReceiveLightMessageQueue(&message, &mMessageQueueInner))
         return message;
     return 0;
 }
@@ -62,11 +62,11 @@ MessageQueue::Element MessageQueue::peek(MessageQueue::BlockType block_type) con
 
     if (block_type == BlockType::Blocking)
     {
-        nn::os::PeekMessageQueue(&message, &mMessageQueueInner);
+        nn::os::PeekLightMessageQueue(&message, &mMessageQueueInner);
         return message;
     }
 
-    if (nn::os::TryPeekMessageQueue(&message, &mMessageQueueInner))
+    if (nn::os::TryPeekLightMessageQueue(&message, &mMessageQueueInner))
         return message;
     return 0;
 }
@@ -75,10 +75,10 @@ bool MessageQueue::jam(MessageQueue::Element message, MessageQueue::BlockType bl
 {
     if (block_type == BlockType::Blocking)
     {
-        nn::os::JamMessageQueue(&mMessageQueueInner, message);
+        nn::os::JamLightMessageQueue(&mMessageQueueInner, message);
         return true;
     }
 
-    return nn::os::TryJamMessageQueue(&mMessageQueueInner, message);
+    return nn::os::TryJamLightMessageQueue(&mMessageQueueInner, message);
 }
 }  // namespace sead

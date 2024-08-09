@@ -7,10 +7,8 @@
 #include <math/seadVector.h>
 #include <prim/seadRuntimeTypeInfo.h>
 
-namespace sead
-{
-class Projection
-{
+namespace sead {
+class Projection {
     SEAD_RTTI_BASE(Projection)
 
 public:
@@ -41,8 +39,7 @@ private:
     f32 mDeviceZOffset;
 };
 
-class PerspectiveProjection : public Projection
-{
+class PerspectiveProjection : public Projection {
     SEAD_RTTI_OVERRIDE(PerspectiveProjection, Projection)
 public:
     PerspectiveProjection();

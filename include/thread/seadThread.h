@@ -28,7 +28,7 @@ class Thread;
 using ThreadList = TList<Thread*>;
 using ThreadListNode = TListNode<Thread*>;
 
-class Thread : public IDisposer, public INamable, public hostio::Reflexible
+class Thread : public IDisposer, public INamable
 {
 public:
     SEAD_ENUM(State, cInitialized, cRunning, cQuitting, cTerminated, cReleased)
@@ -69,6 +69,7 @@ public:
     static void yield();
     static void sleep(TickSpan howLong);
 
+    uintptr_t getStackCheckStartAddress_() const;
     void checkStackOverFlow(const char* source_file, s32 source_line) const;
     void checkStackEndCorruption(const char* source_file, s32 source_line) const;
     void checkStackPointerOverFlow(const char* source_file, s32 source_line) const;
@@ -96,7 +97,7 @@ protected:
 
     virtual void run_();
     virtual void calc_(MessageQueue::Element msg) = 0;
-    virtual uintptr_t getStackCheckStartAddress_() const;
+    virtual void* getFiber() const;
 
     void initStackCheck_();
     void initStackCheckWithCurrentStackPointer_();
@@ -123,9 +124,8 @@ protected:
     s32 mPriority = 0;
 };
 
-class ThreadMgr : public hostio::Node
+class ThreadMgr
 {
-    SEAD_SINGLETON_DISPOSER(ThreadMgr)
 public:
     ThreadMgr();
     virtual ~ThreadMgr();
@@ -191,6 +191,8 @@ private:
     CriticalSection mListCS;
     Thread* mMainThread = nullptr;
     ThreadLocalStorage mThreadPtrTLS;
+
+    SEAD_SINGLETON_DISPOSER(ThreadMgr)
 };
 
 class MainThread : public Thread

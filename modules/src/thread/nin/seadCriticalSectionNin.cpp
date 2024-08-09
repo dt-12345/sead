@@ -2,19 +2,7 @@
 
 namespace sead
 {
-CriticalSection::CriticalSection() : IDisposer()
-{
-    nn::os::InitializeMutex(&mCriticalSectionInner, true, 0);
-}
-
-CriticalSection::CriticalSection(Heap* disposer_heap)
-    : IDisposer(disposer_heap, HeapNullOption::UseSpecifiedOrContainHeap)
-{
-    nn::os::InitializeMutex(&mCriticalSectionInner, true, 0);
-}
-
-CriticalSection::CriticalSection(Heap* disposer_heap, HeapNullOption heap_null_option)
-    : IDisposer(disposer_heap, heap_null_option)
+CriticalSection::CriticalSection()
 {
     nn::os::InitializeMutex(&mCriticalSectionInner, true, 0);
 }

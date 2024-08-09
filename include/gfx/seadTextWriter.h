@@ -3,8 +3,7 @@
 #include <gfx/seadColor.h>
 #include <math/seadBoundBox.h>
 
-namespace sead
-{
+namespace sead {
 class Viewport;
 class Camera;
 class Projection;
@@ -12,8 +11,7 @@ class DrawContext;
 class FontBase;
 class DebugFontMgrNvn;
 
-class TextWriter
-{
+class TextWriter {
 public:
     explicit TextWriter(DrawContext* context);
     TextWriter(DrawContext* context, const Viewport* viewport);

@@ -2,14 +2,11 @@
 
 #include "heap/seadHeap.h"
 
-namespace sead
-{
-class FrameHeap : public Heap
-{
+namespace sead {
+class FrameHeap : public Heap {
     SEAD_RTTI_OVERRIDE(FrameHeap, Heap)
 public:
-    struct State
-    {
+    struct State {
         void* mHeadPtr;
         void* mTailPtr;
     };

@@ -1,6 +1,7 @@
 project(sead CXX ASM)
 
 option(SEAD_DEBUG "Enable debug assertions and warnings" OFF)
+option(SEAD_ZSTD "Enable ZSTD compression and decompression support" ON)
 set(SEAD_PLATFORM "nin" CACHE STRING "Target platform (default: nin)")
 set_property(
   CACHE SEAD_PLATFORM
@@ -82,6 +83,7 @@ add_library(sead OBJECT
   include/framework/seadInfLoopChecker.h
   include/framework/seadMethodTree.h
   include/framework/seadMethodTreeMgr.h
+  include/framework/seadSingleScreenMethodTreeMgr.h
   include/framework/seadProcessMeter.h
   include/framework/seadProcessMeterBar.h
   include/framework/seadTask.h
@@ -101,6 +103,7 @@ add_library(sead OBJECT
   include/gfx/seadColor.h
   include/gfx/seadDrawContext.h
   include/gfx/seadDrawLockContext.h
+  include/gfx/seadDrawMethod.h
   include/gfx/seadFrameBuffer.h
   include/gfx/seadPrimitiveRenderer.h
   include/gfx/seadPrimitiveRendererUtil.h
@@ -118,7 +121,13 @@ add_library(sead OBJECT
   include/heap/seadArena.h
   include/heap/seadDisposer.h
   include/heap/seadExpHeap.h
+  include/heap/seadSpareExpHeap.h
   include/heap/seadFrameHeap.h
+  include/heap/seadSpareFrameHeap.h
+  include/heap/seadLightCompactibleHeap.h
+  include/heap/seadSeparateHeap.h
+  include/heap/seadUnitHeap.h
+  include/heap/seadVirtualAddressHeap.h
   include/heap/seadHeap.h
   include/heap/seadHeapMgr.h
   include/heap/seadMemBlock.h
@@ -155,6 +164,10 @@ add_library(sead OBJECT
   modules/src/math/seadVector.cpp
 
   include/mc/seadCoreInfo.h
+  include/mc/seadDependencyJobGraph.h
+  include/mc/seadDependencyJobQueue.h
+  include/mc/seadDependencyWorker.h
+  include/mc/seadDependencyWorkerMgr.h
   include/mc/seadJob.h
   include/mc/seadJobQueue.h
   include/mc/seadWorker.h
@@ -203,10 +216,15 @@ add_library(sead OBJECT
 
   include/resource/seadArchiveRes.h
   include/resource/seadDecompressor.h
+  include/resource/seadMeshCodecDecompressor.h
+  include/resource/seadParallelMeshCodecDecompressor.h
+  include/resource/seadParallelSZSDecompressor.h
+  include/resource/seadParallelZSTDDecompressor.h
   include/resource/seadResource.h
   include/resource/seadResourceMgr.h
   include/resource/seadSharcArchiveRes.h
   include/resource/seadSZSDecompressor.h
+  include/resource/seadZSTDDecompressor.h
   modules/src/resource/seadArchiveRes.cpp
   modules/src/resource/seadResource.cpp
   modules/src/resource/seadResourceMgr.cpp
@@ -222,6 +240,7 @@ add_library(sead OBJECT
   include/thread/seadCriticalSection.h
   include/thread/seadDelegateThread.h
   include/thread/seadEvent.h
+  include/thread/seadLightSemaphore.h
   include/thread/seadMessageQueue.h
   include/thread/seadMutex.h
   include/thread/seadReadWriteLock.h
@@ -301,7 +320,18 @@ if(SEAD_PLATFORM STREQUAL "nin")
   )
 endif()
 
-target_compile_options(sead PRIVATE -fno-exceptions)
+if (SEAD_ZSTD)
+  target_compile_definitions(sead PUBLIC SEAD_ZSTD=1)
+  set(ZSTD_BUILD_STATIC ON)
+  set(ZSTD_BUILD_SHARED OFF)
+  set(ZSTD_BUILD_TESTS OFF)
+  set(ZSTD_LEGACY_SUPPORT ON) # Nintendo (at least in totk) uses deprecated API calls so what can you do
+  add_subdirectory(../zstd/build/cmake ../zstd)
+  target_include_directories(sead PUBLIC ../zstd/lib/)
+  target_link_libraries(sead PUBLIC libzstd_static)
+endif()
+
+target_compile_options(sead PRIVATE -fno-rtti -fno-exceptions)
 target_compile_options(sead PRIVATE -fno-strict-aliasing)
 target_compile_options(sead PRIVATE -Wall -Wextra -Wdeprecated)
 target_compile_options(sead PRIVATE -Wno-invalid-offsetof)

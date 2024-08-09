@@ -12,8 +12,7 @@
 #include <prim/seadRuntimeTypeInfo.h>
 #include <time/seadTickSpan.h>
 
-namespace sead
-{
+namespace sead {
 class Arena;
 
 class FrameBuffer;
@@ -22,13 +21,11 @@ class LogicalFrameBuffer;
 class MethodTreeMgr;
 class TaskMgr;
 
-class Framework : public hostio::Node
-{
+class Framework : public hostio::Node {
     SEAD_RTTI_BASE(Framework)
 
 public:
-    struct CreateSystemTaskArg
-    {
+    struct CreateSystemTaskArg {
         CreateSystemTaskArg();
 
         HostIOMgr::Parameter* hostio_parameter;
@@ -37,24 +34,21 @@ public:
         int infloop_unk;
     };
 
-    struct InitializeArg
-    {
+    struct InitializeArg {
         InitializeArg();
 
         u32 heap_size;
         Arena* arena;
     };
 
-    struct RunArg
-    {
+    struct RunArg {
         RunArg();
 
         u32 prepare_stack_size;
         s32 prepare_priority;
     };
 
-    enum ProcessPriority
-    {
+    enum ProcessPriority {
         cProcessPriority_Idle = 0,
         cProcessPriority_Normal = 1,
         cProcessPriority_High = 2,

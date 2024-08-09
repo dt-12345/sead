@@ -2,12 +2,10 @@
 
 #include "filedevice/seadFileDevice.h"
 
-namespace sead
-{
+namespace sead {
 class ArchiveRes;
 
-class ArchiveFileDevice : public FileDevice
-{
+class ArchiveFileDevice : public FileDevice {
     SEAD_RTTI_OVERRIDE(ArchiveFileDevice, FileDevice)
 public:
     explicit ArchiveFileDevice(ArchiveRes* archive_res);

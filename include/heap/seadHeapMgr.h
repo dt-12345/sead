@@ -11,10 +11,8 @@
 #include <thread/seadCriticalSection.h>
 #include <time/seadTickSpan.h>
 
-namespace sead
-{
-class HeapMgr : hostio::Node
-{
+namespace sead {
+class HeapMgr : hostio::Node {
     struct AllocCallbackArg;
     struct CreateCallbackArg;
     struct DestroyCallbackArg;
@@ -85,19 +83,16 @@ private:
 
 /// Sets the "current heap" to the specified heap and restores the previous "current heap"
 /// when this goes out of scope.
-class ScopedCurrentHeapSetter
-{
+class ScopedCurrentHeapSetter {
 public:
-    explicit ScopedCurrentHeapSetter(sead::Heap* heap)
-    {
+    explicit ScopedCurrentHeapSetter(sead::Heap* heap) {
         if (heap)
             setPreviousHeap_(HeapMgr::instance()->setCurrentHeap_(heap));
         else
             setPreviousHeapToNone_();
     }
 
-    ~ScopedCurrentHeapSetter()
-    {
+    ~ScopedCurrentHeapSetter() {
         if (hasPreviousHeap_())
             HeapMgr::instance()->setCurrentHeap_(getPreviousHeap_());
     }
@@ -107,8 +102,7 @@ protected:
     Heap* getPreviousHeap_() const { return reinterpret_cast<Heap*>(mPreviousHeap); }
     void setPreviousHeap_(Heap* heap) { mPreviousHeap = reinterpret_cast<uintptr_t>(heap); }
     void setPreviousHeapToNone_() { mPreviousHeap = 1; }
-    bool hasPreviousHeap_() const
-    {
+    bool hasPreviousHeap_() const {
         // XXX: We cannot just do `mPreviousHeap != 1` because that results in different codegen.
         // The cast smells like implementation defined behavior, but 1 should not be a valid
         // pointer on any platform that we support. In practice, this will work correctly.
@@ -118,14 +112,12 @@ protected:
     uintptr_t mPreviousHeap;
 };
 
-class FindContainHeapCache
-{
+class FindContainHeapCache {
 public:
     FindContainHeapCache();
 
     bool tryRemoveHeap(Heap* heap);
-    Heap* tryAddHeap()
-    {
+    Heap* tryAddHeap() {
         mHeap |= 1;
         return reinterpret_cast<Heap*>(mHeap.load());
     }

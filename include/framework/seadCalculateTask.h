@@ -3,10 +3,8 @@
 #include "framework/seadMethodTree.h"
 #include "framework/seadTaskBase.h"
 
-namespace sead
-{
-class CalculateTask : public TaskBase
-{
+namespace sead {
+class CalculateTask : public TaskBase {
     SEAD_RTTI_OVERRIDE(CalculateTask, TaskBase)
 public:
     explicit CalculateTask(const TaskConstructArg& arg);

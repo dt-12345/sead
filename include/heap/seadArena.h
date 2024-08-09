@@ -3,10 +3,8 @@
 
 #include <basis/seadTypes.h>
 
-namespace sead
-{
-class Arena
-{
+namespace sead {
+class Arena {
 public:
     Arena();
     ~Arena();

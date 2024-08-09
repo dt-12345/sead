@@ -3,17 +3,14 @@
 #include <gfx/seadDrawLockContext.h>
 #include <heap/seadDisposer.h>
 
-namespace sead
-{
+namespace sead {
 // no content yet, just for the enum
-class Graphics : public IDisposer
-{
+class Graphics : public IDisposer {
     using UnknownCallback = void (*)(int);
     static Graphics* sInstance;
 
 public:
-    enum DevicePosture
-    {
+    enum DevicePosture {
         cDevicePosture_Same = 0,
         cDevicePosture_RotateRight = 1,
         cDevicePosture_RotateLeft = 2,
@@ -23,6 +20,8 @@ public:
         cDevicePosture_FlipXY = 3,
         cDevicePosture_Invalid = 4,
     };
+
+    virtual DrawLockContext* getDrawLockContext() const;
 
     void lockDrawContext();
     void unlockDrawContext();

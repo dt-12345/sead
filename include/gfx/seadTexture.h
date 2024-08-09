@@ -4,10 +4,8 @@
 #include <basis/seadTypes.h>
 #include <prim/seadRuntimeTypeInfo.h>
 
-namespace sead
-{
-class Texture
-{
+namespace sead {
+class Texture {
     SEAD_RTTI_BASE(Texture)
 
 public:

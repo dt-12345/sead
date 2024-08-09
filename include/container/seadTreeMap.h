@@ -6,16 +6,14 @@
 #include "prim/seadDelegate.h"
 #include "prim/seadSafeString.h"
 
-namespace sead
-{
+namespace sead {
 template <typename Key>
 class TreeMapNode;
 
 /// Sorted associative container, implemented using a left-leaning red-black tree.
 /// For an explanation of the algorithm, see https://www.cs.princeton.edu/~rs/talks/LLRB/LLRB.pdf
 template <typename Key>
-class TreeMapImpl
-{
+class TreeMapImpl {
 public:
     using Node = TreeMapNode<Key>;
 
@@ -26,35 +24,30 @@ public:
     Node* find(const Key& key) const { return find(mRoot, key); }
 
     template <typename Callable>
-    void forEach(const Callable& callable) const
-    {
+    void forEach(const Callable& callable) const {
         if (mRoot)
             forEach(mRoot, callable);
     }
 
-    Node* startIterating() const
-    {
+    Node* startIterating() const {
         if (!mRoot)
             return nullptr;
         return startIterating(mRoot);
     }
 
-    Node* nextNode(Node* node) const
-    {
+    Node* nextNode(Node* node) const {
         if (!node)
             return nullptr;
 
         // If there is a right child node, explore that branch first.
-        if (node->mRight)
-        {
+        if (node->mRight) {
             node->mRight->setParent(node);
             return startIterating(node->mRight);
         }
 
         // Otherwise, walk back up to the node P from which we reached this node
         // by following P's left child pointer.
-        while (auto* const parent = node->getParent())
-        {
+        while (auto* const parent = node->getParent()) {
             if (parent->mLeft == node)
                 return parent;
             node = parent;
@@ -65,10 +58,8 @@ public:
 protected:
     /// Returns the left most child of a given node, marking each node with its parent
     /// along the way.
-    static Node* startIterating(Node* node)
-    {
-        while (node->mLeft)
-        {
+    static Node* startIterating(Node* node) {
+        while (node->mLeft) {
             node->mLeft->setParent(node);
             node = node->mLeft;
         }
@@ -98,25 +89,22 @@ protected:
 /// Requires Key to have a compare() member function, which returns -1 if lhs < rhs, 0 if lhs = rhs
 /// and 1 if lhs > rhs.
 template <typename Key>
-class TreeMapNode
-{
+class TreeMapNode {
 public:
-    TreeMapNode()
-    {
+    TreeMapNode() {
         mLeft = mRight = nullptr;
         mColorAndPtr = 0;
     }
 
-    virtual ~TreeMapNode() = default;
-    virtual void erase_() = 0;
+    ~TreeMapNode() = default;
+    void erase_();
 
     const Key& key() const { return mKey; }
 
 protected:
     friend class TreeMapImpl<Key>;
 
-    enum class Color
-    {
+    enum class Color {
         Red = 0,
         Black = 1,
     };
@@ -139,19 +127,16 @@ protected:
 /// Requires Key to have operator< defined
 /// This can be specialized, but all specializations must define `compare` and `key` as follows.
 template <typename Key>
-struct TreeMapKeyImpl
-{
+struct TreeMapKeyImpl {
     TreeMapKeyImpl() = default;
     TreeMapKeyImpl(const Key& key_) : key(key_) {}
-    TreeMapKeyImpl& operator=(const Key& key_)
-    {
+    TreeMapKeyImpl& operator=(const Key& key_) {
         key = key_;
         return *this;
     }
 
     /// Returns -1 if mKey < rhs, 0 if mKey = rhs and 1 if mKey > rhs.
-    s32 compare(const TreeMapKeyImpl& rhs) const
-    {
+    s32 compare(const TreeMapKeyImpl& rhs) const {
         if (key < rhs.key)
             return -1;
         if (rhs.key < key)
@@ -165,19 +150,16 @@ struct TreeMapKeyImpl
 /// Sorted associative container.
 /// This is essentially std::map<Key, Value>
 template <typename Key, typename Value>
-class TreeMap : public TreeMapImpl<TreeMapKeyImpl<Key>>
-{
+class TreeMap : public TreeMapImpl<TreeMapKeyImpl<Key>> {
 public:
     using MapImpl = TreeMapImpl<TreeMapKeyImpl<Key>>;
-    class Node : public MapImpl::Node
-    {
+    class Node : public MapImpl::Node {
     public:
-        Node(TreeMap* map, const Key& key, const Value& value) : mValue(value), mMap(map)
-        {
+        Node(TreeMap* map, const Key& key, const Value& value) : mValue(value), mMap(map) {
             this->mKey = key;
         }
 
-        void erase_() override;
+        void erase_();
 
         Value& value() { return mValue; }
         const Value& value() const { return mValue; }
@@ -214,8 +196,7 @@ private:
 };
 
 template <typename Key, typename Value, int N>
-class FixedTreeMap : public TreeMap<Key, Value>
-{
+class FixedTreeMap : public TreeMap<Key, Value> {
 public:
     FixedTreeMap() { TreeMap<Key, Value>::setBuffer(N, &mWork); }
 
@@ -232,8 +213,7 @@ private:
 };
 
 template <typename Key, typename Node>
-class IntrusiveTreeMap : public TreeMapImpl<Key>
-{
+class IntrusiveTreeMap : public TreeMapImpl<Key> {
 public:
     using MapImpl = TreeMapImpl<Key>;
 
@@ -241,8 +221,7 @@ public:
 
     // Callable must have the signature Node*
     template <typename Callable>
-    void forEach(const Callable& delegate) const
-    {
+    void forEach(const Callable& delegate) const {
         MapImpl::forEach([delegate](auto* base_node) {
             auto* node = static_cast<Node*>(base_node);
             delegate(node);
@@ -254,17 +233,14 @@ public:
 };
 
 template <typename Key>
-inline void TreeMapImpl<Key>::insert(Node* node)
-{
+inline void TreeMapImpl<Key>::insert(Node* node) {
     mRoot = insert(mRoot, node);
     mRoot->setColor(Node::Color::Black);
 }
 
 template <typename Key>
-inline TreeMapNode<Key>* TreeMapImpl<Key>::insert(Node* root, Node* node)
-{
-    if (!root)
-    {
+inline TreeMapNode<Key>* TreeMapImpl<Key>::insert(Node* root, Node* node) {
+    if (!root) {
         node->mLeft = node->mRight = nullptr;
         node->setColor(Node::Color::Red);
         return node;
@@ -272,16 +248,11 @@ inline TreeMapNode<Key>* TreeMapImpl<Key>::insert(Node* root, Node* node)
 
     const s32 cmp = node->key().compare(root->key());
 
-    if (cmp < 0)
-    {
+    if (cmp < 0) {
         root->mLeft = insert(root->mLeft, node);
-    }
-    else if (cmp > 0)
-    {
+    } else if (cmp > 0) {
         root->mRight = insert(root->mRight, node);
-    }
-    else if (root != node)
-    {
+    } else if (root != node) {
         node->mRight = root->mRight;
         node->mLeft = root->mLeft;
         node->mColorAndPtr = root->mColorAndPtr;
@@ -302,29 +273,23 @@ inline TreeMapNode<Key>* TreeMapImpl<Key>::insert(Node* root, Node* node)
 }
 
 template <typename Key>
-inline void TreeMapImpl<Key>::erase(const Key& key)
-{
+inline void TreeMapImpl<Key>::erase(const Key& key) {
     mRoot = erase(mRoot, key);
     if (mRoot)
         mRoot->setColor(Node::Color::Black);
 }
 
 template <typename Key>
-inline TreeMapNode<Key>* TreeMapImpl<Key>::erase(Node* root, const Key& key)
-{
-    if (key.compare(root->key()) < 0)
-    {
+inline TreeMapNode<Key>* TreeMapImpl<Key>::erase(Node* root, const Key& key) {
+    if (key.compare(root->key()) < 0) {
         if (!isRed(root->mLeft) && !isRed(root->mLeft->mLeft))
             root = moveRedLeft(root);
         root->mLeft = erase(root->mLeft, key);
-    }
-    else
-    {
+    } else {
         if (isRed(root->mLeft))
             root = rotateRight(root);
 
-        if (key.compare(root->key()) == 0 && !root->mRight)
-        {
+        if (key.compare(root->key()) == 0 && !root->mRight) {
             root->erase_();
             return nullptr;
         }
@@ -332,8 +297,7 @@ inline TreeMapNode<Key>* TreeMapImpl<Key>::erase(Node* root, const Key& key)
         if (!isRed(root->mRight) && !isRed(root->mRight->mLeft))
             root = moveRedRight(root);
 
-        if (key.compare(root->key()) == 0)
-        {
+        if (key.compare(root->key()) == 0) {
             Node* const min_node = findMin(root->mRight);
 
             Node* target = root->mRight;
@@ -345,9 +309,7 @@ inline TreeMapNode<Key>* TreeMapImpl<Key>::erase(Node* root, const Key& key)
             target->mColorAndPtr = root->mColorAndPtr;
             root->erase_();
             root = target;
-        }
-        else
-        {
+        } else {
             root->mRight = erase(root->mRight, key);
         }
     }
@@ -355,17 +317,14 @@ inline TreeMapNode<Key>* TreeMapImpl<Key>::erase(Node* root, const Key& key)
 }
 
 template <typename Key>
-inline void TreeMapImpl<Key>::clear()
-{
+inline void TreeMapImpl<Key>::clear() {
     mRoot = nullptr;
 }
 
 template <typename Key>
-inline TreeMapNode<Key>* TreeMapImpl<Key>::find(Node* root, const Key& key) const
-{
+inline TreeMapNode<Key>* TreeMapImpl<Key>::find(Node* root, const Key& key) const {
     Node* node = root;
-    while (node)
-    {
+    while (node) {
         const s32 cmp = key.compare(node->key());
         if (cmp < 0)
             node = node->mLeft;
@@ -380,11 +339,9 @@ inline TreeMapNode<Key>* TreeMapImpl<Key>::find(Node* root, const Key& key) cons
 
 template <typename Key>
 template <typename Callable>
-inline void TreeMapImpl<Key>::forEach(Node* start, const Callable& callable)
-{
+inline void TreeMapImpl<Key>::forEach(Node* start, const Callable& callable) {
     Node* i = start;
-    do
-    {
+    do {
         Node* node = i;
         if (i->mLeft)
             forEach(i->mLeft, callable);
@@ -394,8 +351,7 @@ inline void TreeMapImpl<Key>::forEach(Node* start, const Callable& callable)
 }
 
 template <typename Key>
-inline TreeMapNode<Key>* TreeMapImpl<Key>::rotateLeft(Node* node)
-{
+inline TreeMapNode<Key>* TreeMapImpl<Key>::rotateLeft(Node* node) {
     TreeMapNode<Key>* j = node->mRight;
     node->mRight = j->mLeft;
     j->mLeft = node;
@@ -405,8 +361,7 @@ inline TreeMapNode<Key>* TreeMapImpl<Key>::rotateLeft(Node* node)
 }
 
 template <typename Key>
-inline TreeMapNode<Key>* TreeMapImpl<Key>::rotateRight(Node* node)
-{
+inline TreeMapNode<Key>* TreeMapImpl<Key>::rotateRight(Node* node) {
     TreeMapNode<Key>* j = node->mLeft;
     node->mLeft = j->mRight;
     j->mRight = node;
@@ -418,11 +373,9 @@ inline TreeMapNode<Key>* TreeMapImpl<Key>::rotateRight(Node* node)
 // NON_MATCHING: this version matches the LLRB tree implementation and is better optimized;
 // there is a useless store to node->mRight in the original version
 template <typename Key>
-inline TreeMapNode<Key>* TreeMapImpl<Key>::moveRedLeft(Node* node)
-{
+inline TreeMapNode<Key>* TreeMapImpl<Key>::moveRedLeft(Node* node) {
     flipColors(node);
-    if (isRed(node->mRight->mLeft))
-    {
+    if (isRed(node->mRight->mLeft)) {
         node->mRight = rotateRight(node->mRight);
         node = rotateLeft(node);
         flipColors(node);
@@ -431,11 +384,9 @@ inline TreeMapNode<Key>* TreeMapImpl<Key>::moveRedLeft(Node* node)
 }
 
 template <typename Key>
-inline TreeMapNode<Key>* TreeMapImpl<Key>::moveRedRight(Node* node)
-{
+inline TreeMapNode<Key>* TreeMapImpl<Key>::moveRedRight(Node* node) {
     flipColors(node);
-    if (isRed(node->mLeft->mLeft))
-    {
+    if (isRed(node->mLeft->mLeft)) {
         node = rotateRight(node);
         flipColors(node);
     }
@@ -443,8 +394,7 @@ inline TreeMapNode<Key>* TreeMapImpl<Key>::moveRedRight(Node* node)
 }
 
 template <typename Key>
-inline TreeMapNode<Key>* TreeMapImpl<Key>::findMin(Node* node)
-{
+inline TreeMapNode<Key>* TreeMapImpl<Key>::findMin(Node* node) {
     while (node->mLeft)
         node = node->mLeft;
     return node;
@@ -452,8 +402,7 @@ inline TreeMapNode<Key>* TreeMapImpl<Key>::findMin(Node* node)
 
 // NON_MATCHING: this version matches the LLRB tree implementation and is better optimized
 template <typename Key>
-inline TreeMapNode<Key>* TreeMapImpl<Key>::eraseMin(Node* node)
-{
+inline TreeMapNode<Key>* TreeMapImpl<Key>::eraseMin(Node* node) {
     if (!node->mLeft)
         return nullptr;
 
@@ -468,8 +417,7 @@ inline TreeMapNode<Key>* TreeMapImpl<Key>::eraseMin(Node* node)
 }
 
 template <typename Key>
-inline TreeMapNode<Key>* TreeMapImpl<Key>::fixUp(Node* node)
-{
+inline TreeMapNode<Key>* TreeMapImpl<Key>::fixUp(Node* node) {
     if (isRed(node->mRight))
         node = rotateLeft(node);
 
@@ -483,16 +431,14 @@ inline TreeMapNode<Key>* TreeMapImpl<Key>::fixUp(Node* node)
 }
 
 template <typename Key>
-inline void TreeMapImpl<Key>::flipColors(Node* node)
-{
+inline void TreeMapImpl<Key>::flipColors(Node* node) {
     node->flipColor();
     node->mLeft->flipColor();
     node->mRight->flipColor();
 }
 
 template <typename Key, typename Value>
-inline void TreeMap<Key, Value>::Node::erase_()
-{
+inline void TreeMap<Key, Value>::Node::erase_() {
     TreeMap* const map = mMap;
     void* const this_ = this;
     // Note: Nintendo does not call the destructor, which is dangerous...
@@ -501,11 +447,9 @@ inline void TreeMap<Key, Value>::Node::erase_()
 }
 
 template <typename Key, typename Value>
-inline void TreeMap<Key, Value>::allocBuffer(s32 node_max, Heap* heap, s32 alignment)
-{
+inline void TreeMap<Key, Value>::allocBuffer(s32 node_max, Heap* heap, s32 alignment) {
     SEAD_ASSERT(mFreeList.work() == nullptr);
-    if (node_max <= 0)
-    {
+    if (node_max <= 0) {
         SEAD_ASSERT_MSG(false, "node_max[%d] must be larger than zero", node_max);
         AllocFailAssert(heap, node_max * sizeof(Node), alignment);
     }
@@ -516,15 +460,13 @@ inline void TreeMap<Key, Value>::allocBuffer(s32 node_max, Heap* heap, s32 align
 }
 
 template <typename Key, typename Value>
-inline void TreeMap<Key, Value>::setBuffer(s32 node_max, void* buffer)
-{
+inline void TreeMap<Key, Value>::setBuffer(s32 node_max, void* buffer) {
     mCapacity = node_max;
     mFreeList.setWork(buffer, sizeof(Node), node_max);
 }
 
 template <typename Key, typename Value>
-inline void TreeMap<Key, Value>::freeBuffer()
-{
+inline void TreeMap<Key, Value>::freeBuffer() {
     void* buffer = mFreeList.work();
     if (!buffer)
         return;
@@ -535,12 +477,9 @@ inline void TreeMap<Key, Value>::freeBuffer()
 }
 
 template <typename Key, typename Value>
-inline Value* TreeMap<Key, Value>::insert(const Key& key, const Value& value)
-{
-    if (mSize >= mCapacity)
-    {
-        if (Node* node = find(key))
-        {
+inline Value* TreeMap<Key, Value>::insert(const Key& key, const Value& value) {
+    if (mSize >= mCapacity) {
+        if (Node* node = find(key)) {
             node->value() = value;
             return &node->value();
         }
@@ -555,8 +494,7 @@ inline Value* TreeMap<Key, Value>::insert(const Key& key, const Value& value)
 }
 
 template <typename Key, typename Value>
-inline void TreeMap<Key, Value>::clear()
-{
+inline void TreeMap<Key, Value>::clear() {
     Delegate1<TreeMap<Key, Value>, typename MapImpl::Node*> delegate(this,
                                                                      &TreeMap::eraseNodeForClear_);
     MapImpl::forEach(delegate);
@@ -565,15 +503,13 @@ inline void TreeMap<Key, Value>::clear()
 }
 
 template <typename Key, typename Value>
-inline typename TreeMap<Key, Value>::Node* TreeMap<Key, Value>::find(const Key& key) const
-{
+inline typename TreeMap<Key, Value>::Node* TreeMap<Key, Value>::find(const Key& key) const {
     return static_cast<Node*>(MapImpl::find(key));
 }
 
 template <typename Key, typename Value>
 template <typename Callable>
-inline void TreeMap<Key, Value>::forEach(const Callable& delegate) const
-{
+inline void TreeMap<Key, Value>::forEach(const Callable& delegate) const {
     MapImpl::forEach([&delegate](auto* base_node) {
         auto* node = static_cast<Node*>(base_node);
         delegate(node->key(), node->value());
@@ -581,8 +517,7 @@ inline void TreeMap<Key, Value>::forEach(const Callable& delegate) const
 }
 
 template <typename Key, typename Value>
-inline void TreeMap<Key, Value>::eraseNodeForClear_(typename MapImpl::Node* node)
-{
+inline void TreeMap<Key, Value>::eraseNodeForClear_(typename MapImpl::Node* node) {
     // Note: Nintendo does not call the destructor, which is dangerous...
     mFreeList.free(node);
 }

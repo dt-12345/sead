@@ -7,9 +7,9 @@
 #include <heap/seadDisposer.h>
 #include <heap/seadHeap.h>
 #include <prim/seadSafeString.h>
+#include <nn/os/os_ReaderWriterLock.h>
 
-namespace sead
-{
+namespace sead {
 class Resource;
 class DirectResource;
 class ResourceFactory;
@@ -18,13 +18,9 @@ class Decompressor;
 template <typename T>
 class DirectResourceFactory;
 
-class ResourceMgr
-{
-    SEAD_SINGLETON_DISPOSER(ResourceMgr)
-
+class ResourceMgr {
 public:
-    struct CreateArg
-    {
+    struct CreateArg {
         u8* buffer = nullptr;
         u32 file_size = 0;
         u32 buffer_size = 0;
@@ -35,11 +31,10 @@ public:
         s32 alignment = 0x20;
     };
 #ifdef NNSDK
-    static_assert(sizeof(CreateArg) == 0x40);
+    static_assert(sizeof(CreateArg) == 0x38);
 #endif
 
-    struct LoadArg
-    {
+    struct LoadArg {
         SafeString path;
         Heap* instance_heap = nullptr;
         Heap* load_data_heap = nullptr;
@@ -56,7 +51,7 @@ public:
         bool* has_tried_create_with_decomp = nullptr;
     };
 #ifdef NNSDK
-    static_assert(sizeof(LoadArg) == 0x58);
+    static_assert(sizeof(LoadArg) == 0x50);
 #endif
 
 public:
@@ -67,7 +62,9 @@ public:
 
     void registerFactory(ResourceFactory* factory, const SafeString& name);
     void unregisterFactory(ResourceFactory* factory);
-    ResourceFactory* getDefaultFactory() const { return mDefaultResourceFactory; }
+    ResourceFactory* getDefaultFactory() const {
+        return mDefaultResourceFactory;
+    }
     /// Set the specified factory as the default factory. Its name is set to "".
     /// @param factory  If null, a dummy resource factory is set as the default factory.
     /// @returns the previous default factory
@@ -88,12 +85,16 @@ private:
     typedef TList<Decompressor*> DecompressorList;
 
     FactoryList mFactoryList;
+    nn::os::ReaderWriterLock mLock;
+    int mFactoryCount;
     DecompressorList mDecompList;
     ResourceFactory* mNullResourceFactory = nullptr;
     ResourceFactory* mDefaultResourceFactory = nullptr;
+
+    SEAD_SINGLETON_DISPOSER(ResourceMgr)
 };
 #ifdef NNSDK
-static_assert(sizeof(ResourceMgr) == 0x60);
+static_assert(sizeof(ResourceMgr) == 0x98);
 #endif
 
 }  // namespace sead

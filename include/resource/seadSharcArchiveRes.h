@@ -8,15 +8,12 @@
 #include <prim/seadSafeString.h>
 #include <resource/seadArchiveRes.h>
 
-namespace sead
-{
-class SharcArchiveRes : public ArchiveRes
-{
+namespace sead {
+class SharcArchiveRes : public ArchiveRes {
     SEAD_RTTI_OVERRIDE(SharcArchiveRes, ArchiveRes)
 
 public:
-    struct ArchiveBlockHeader
-    {
+    struct ArchiveBlockHeader {
         char signature[4];
         u16 header_size;
         u16 byte_order;
@@ -26,24 +23,21 @@ public:
         u16 reserved;
     };
 
-    struct FATBlockHeader
-    {
+    struct FATBlockHeader {
         char signature[4];
         u16 header_size;
         u16 file_num;
         u32 hash_key;
     };
 
-    struct FATEntry
-    {
+    struct FATEntry {
         u32 hash;
         u32 name_offset;
         u32 data_start_offset;
         u32 data_end_offset;
     };
 
-    struct FNTBlockHeader
-    {
+    struct FNTBlockHeader {
         char signature[4];
         u16 header_size;
         u16 reserved;

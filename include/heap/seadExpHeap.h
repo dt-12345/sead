@@ -4,29 +4,23 @@
 #include "heap/seadMemBlock.h"
 #include "prim/seadSizedEnum.h"
 
-namespace sead
-{
-class ExpHeap : public Heap
-{
+namespace sead {
+class ExpHeap : public Heap {
     SEAD_RTTI_OVERRIDE(ExpHeap, Heap)
 public:
-    enum class AllocMode
-    {
+    enum class AllocMode {
         FirstFit = 0,
         BestFit = 1,
     };
 
-    enum class FindFreeBlockMode
-    {
+    enum class FindFreeBlockMode {
         Auto = 0,
         FromFreeList = 1,
         ByIteratingMemBlock = 2,
     };
 
     // FIXME: incomplete
-    enum class FindMode
-    {
-    };
+    enum class FindMode {};
 
     static ExpHeap* create(size_t size, const SafeString& name, Heap* parent, s32 alignment,
                            HeapDirection direction, bool);

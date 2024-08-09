@@ -8,7 +8,6 @@ namespace sead
 {
 class GameConfig : public hostio::Node
 {
-    SEAD_SINGLETON_DISPOSER(GameConfig)
     GameConfig();
     virtual ~GameConfig();
 
@@ -20,5 +19,8 @@ protected:
         virtual ~FileWriteCallback();
         virtual void save();
     };
+
+private:
+    SEAD_SINGLETON_DISPOSER(GameConfig)
 };
 }  // namespace sead

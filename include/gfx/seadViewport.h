@@ -4,8 +4,7 @@
 #include <math/seadBoundBox.h>
 #include <math/seadVector.h>
 
-namespace sead
-{
+namespace sead {
 template <typename T>
 class Ray;
 class DrawContext;
@@ -13,8 +12,7 @@ class LogicalFrameBuffer;
 class Projection;
 class Camera;
 
-class Viewport : public BoundBox2f
-{
+class Viewport : public BoundBox2f {
 public:
     Viewport();
     Viewport(float left, float top, float right, float bottom);
@@ -35,5 +33,6 @@ public:
 
 private:
     Graphics::DevicePosture mDevicePosture;
+    Vector2f _1C;
 };
 }  // namespace sead

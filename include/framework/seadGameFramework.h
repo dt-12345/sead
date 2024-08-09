@@ -26,6 +26,7 @@ public:
     virtual void createSeadMenuMgr(TaskBase* base);
     virtual void createInfLoopChecker(TaskBase* base, const TickSpan&, int);
     virtual void createCuckooClock(TaskBase* base);
+    virtual float calcFps() const = 0;
     virtual void saveScreenShot(const SafeString&);
     virtual bool isScreenShotBusy() const;
     virtual void waitStartDisplayLoop_();
@@ -43,6 +44,6 @@ private:
     sead::SafeString mUnk3 = "";
     void* mUnk4 = nullptr;
     void (*mUnk5)(bool) = nullptr;
-    void (*mUnk6)(bool);
+    void (*mDrawLockContextCallback)(bool);
 };
 }  // namespace sead

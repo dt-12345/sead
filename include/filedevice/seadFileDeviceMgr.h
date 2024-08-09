@@ -16,7 +16,6 @@ namespace sead
 {
 class FileDeviceMgr
 {
-    SEAD_SINGLETON_DISPOSER(FileDeviceMgr)
     FileDeviceMgr();
     ~FileDeviceMgr();
 
@@ -73,8 +72,11 @@ private:
     u8* mRomCache = nullptr;
     bool mMountedHost = false;
     bool mMountedSd = false;
+    size_t mRomCacheSize = 0;
 #endif
+    SEAD_SINGLETON_DISPOSER(FileDeviceMgr)
 };
+static_assert(sizeof(FileDeviceMgr) == 0x60);
 
 }  // namespace sead
 

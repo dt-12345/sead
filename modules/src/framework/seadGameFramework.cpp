@@ -14,7 +14,7 @@ namespace sead
 {
 GameFramework::GameFramework()
 {
-    mUnk6 = [](bool lock) {
+    mDrawLockContextCallback = [](bool lock) {
         if (lock)
             Graphics::instance()->lockDrawContext();
         else

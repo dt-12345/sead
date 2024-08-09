@@ -15,28 +15,21 @@
 #include <prim/seadSafeString.h>
 #include <thread/seadCriticalSection.h>
 
-namespace sead
-{
+namespace sead {
 class Thread;
 class WriteStream;
 
-namespace hostio
-{
+namespace hostio {
 class Context;
 class PropertyEvent;
 }  // namespace hostio
 
-class Heap : public IDisposer, public INamable, public hostio::Reflexible
-{
+class Heap : public IDisposer, public INamable {
 public:
     SEAD_ENUM(Flag, cEnableLock, cDisposing, cEnableWarning, cEnableDebugFillSystem,
               cEnableDebugFillUser)
 
-    enum HeapDirection
-    {
-        cHeapDirection_Forward = 1,
-        cHeapDirection_Reverse = -1
-    };
+    enum HeapDirection { cHeapDirection_Forward = 1, cHeapDirection_Reverse = -1 };
 
     Heap(const SafeString& name, Heap* parent, void* address, size_t size, HeapDirection direction,
          bool);
@@ -48,6 +41,7 @@ public:
     virtual size_t adjust() = 0;
     virtual void* tryAlloc(size_t size, s32 alignment) = 0;
     virtual void free(void* ptr) = 0;
+    virtual size_t freeAndGetAllocatableSize();
     virtual void* resizeFront(void*, size_t) = 0;
     virtual void* resizeBack(void*, size_t) = 0;
     virtual void* tryRealloc(void* ptr, size_t size, s32 alignment);
@@ -80,8 +74,7 @@ public:
     void removeDisposer_(IDisposer* disposer);
     Heap* findContainHeap_(const void* ptr);
 
-    void* alloc(size_t size, s32 alignment = sizeof(void*))
-    {
+    void* alloc(size_t size, s32 alignment = sizeof(void*)) {
         void* ptr = tryAlloc(size, alignment);
         SEAD_ASSERT_MSG(ptr,
                         "alloc failed. size: %zu, allocatable size: %zu, alignment: %d, heap: %s",
@@ -89,17 +82,35 @@ public:
         return ptr;
     }
 
-    void enableLock(bool on) { mFlag.changeBit(Flag::cEnableLock, on); }
-    void enableWarning(bool on) { mFlag.changeBit(Flag::cEnableWarning, on); }
-    void enableDebugFillSystem(bool on) { mFlag.changeBit(Flag::cEnableDebugFillSystem, on); }
-    void enableDebugFillUser(bool on) { mFlag.changeBit(Flag::cEnableDebugFillUser, on); }
+    void enableLock(bool on) {
+        mFlag.changeBit(Flag::cEnableLock, on);
+    }
+    void enableWarning(bool on) {
+        mFlag.changeBit(Flag::cEnableWarning, on);
+    }
+    void enableDebugFillSystem(bool on) {
+        mFlag.changeBit(Flag::cEnableDebugFillSystem, on);
+    }
+    void enableDebugFillUser(bool on) {
+        mFlag.changeBit(Flag::cEnableDebugFillUser, on);
+    }
 
-    bool isLockEnabled() const { return mFlag.isOnBit(Flag::cEnableLock); }
-    bool isWarningEnabled() const { return mFlag.isOnBit(Flag::cEnableWarning); }
-    bool isDebugFillSystemEnabled() const { return mFlag.isOnBit(Flag::cEnableDebugFillSystem); }
-    bool isDebugFillUserEnabled() const { return mFlag.isOnBit(Flag::cEnableDebugFillUser); }
+    bool isLockEnabled() const {
+        return mFlag.isOnBit(Flag::cEnableLock);
+    }
+    bool isWarningEnabled() const {
+        return mFlag.isOnBit(Flag::cEnableWarning);
+    }
+    bool isDebugFillSystemEnabled() const {
+        return mFlag.isOnBit(Flag::cEnableDebugFillSystem);
+    }
+    bool isDebugFillUserEnabled() const {
+        return mFlag.isOnBit(Flag::cEnableDebugFillUser);
+    }
 
-    sead::CriticalSection& getCriticalSection() { return mCS; }
+    sead::CriticalSection& getCriticalSection() {
+        return mCS;
+    }
 
     using HeapList = OffsetList<Heap>;
     using DisposerList = OffsetList<IDisposer>;
@@ -119,8 +130,7 @@ public:
 #endif
 };
 
-inline void* Heap::tryRealloc(void*, size_t, s32)
-{
+inline void* Heap::tryRealloc(void*, size_t, s32) {
     SEAD_ASSERT_MSG(false, "tryRealloc is not implement.");
     return nullptr;
 }
