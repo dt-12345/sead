@@ -11,7 +11,7 @@
 
 namespace sead {
 
-class IFunction;
+class AnyFunctionBase;
 
 class DependencyJobThreadControl {
 public:
@@ -39,7 +39,7 @@ protected:
     void run_() override;
 
     DependencyJobThreadControl mThreadControl;
-    IFunction* mThreadRunCallback;
+    AnyFunctionBase* mThreadRunCallback;
     Event mWorkerFinishEvent;
     CoreId mCoreId;
 };

@@ -9,13 +9,13 @@
 
 namespace sead {
 
-class IFunction;
+class AnyFunctionBase;
 
 class DependencyWorkerMgr {
 public:
     struct InitializeArg {
-        IFunction* _00;
-        IFunction* job_run_callback;
+        AnyFunctionBase* _00;
+        AnyFunctionBase* job_run_callback;
         u8 core_count;
         SafeString worker_name;
         s32 thread_priority;
