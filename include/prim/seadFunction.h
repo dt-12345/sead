@@ -127,6 +127,21 @@ auto makeMemberFunction(C* instance, F&& f) {
 
 namespace detail {
 
+// https://stackoverflow.com/a/22592618
+// probably doesn't belong here, also there might be a better solution idk
+template <template <class> class T, class U>
+struct is_derived_from {
+private:
+    template <class V>
+    static decltype(static_cast<const T<V>&>(std::declval<U>()), std::true_type{})
+        test(const T<V>&);
+
+    static std::false_type test(...);
+
+public:
+    static constexpr bool value = decltype(is_derived_from::test(std::declval<U>()))::value;
+};
+
 template <size_t StorageSize, typename F>
 class AnyFunctionImpl;
 
@@ -151,6 +166,9 @@ public:
 
     template <typename T>
     AnyFunctionImpl& operator=(T& other) {
+        static_assert(std::is_trivially_destructible<T>());
+        static_assert(is_derived_from<IFunction, T>());
+        static_assert(sizeof(T) <= sizeof(mStorage));
         copyFrom(&other);
         return *this;
     }
